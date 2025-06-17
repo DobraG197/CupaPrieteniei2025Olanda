@@ -1,734 +1,341 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <title>Turneu cu faze eliminatorii</title>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <style>
-        body {
-            background-size: cover;
-            background-repeat: repeat;
-            background-position: center;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        h1, h2 {
-            text-align: center;
-            color: #fff;
-            text-shadow: 1px 1px 3px #000;
-        }
-        .section {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 1000px;
-            border-radius: 8px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-        input[type='number'] {
-            width: 50px;
-        }
-        .used-button {
-            background-color: orange;
-        }
-        .match-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .match-item span {
-            flex: 1;
-        }
-        .match-item input {
-            width: 30px;
-            text-align: center;
-            margin: 0 5px;
-        }
-        .grupe-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .grupa {
-            flex: 1;
-            margin: 0 10px;
-            min-width: 200px;
-        }
-        #banner {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f8f8f8;
-            padding: 10px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Turneu cu faze eliminatorii</title>
+  <style>
+    body {
+
+  background-image: url('https://github.com/DobraG197/CupaPrieteniei2025Olanda/blob/main/Cupa%20Prieteniei_%20Handshake%20at%20Footy%20Park.png');
+  background-size: 300px 300px;  /* this sets tile size */
+  background-repeat: repeat;     /* repeat in both directions */
+  background-position: top left; /* optional */
+  font-family: Arial, sans-serif;
+  padding: 10px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #fff;
+      text-shadow: 1px 1px 3px #000;
+    }
+    .section {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    input[type='number'] {
+      width: 50px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Turneu de Fotbal - Grupe și Eliminatorii</h1>
-    <div class="section">
-        <button id="drawButton" onclick="startDraw()">Trage la sorți</button>
-        <div id="grupe" class="grupe-container"></div>
-        <div id="clasamente"></div>
-    </div>
-    <div class="section">
-        <h2>Clasamente Faze Eliminatorii</h2>
-        <div id="clasament-sferturi"></div>
-        <div id="clasament-semifinale"></div>
-        <div id="clasament-finalaMica"></div>
-        <div id="clasament-finalaMare"></div>
-    </div>
-    <div class="section">
-        <h2>Meciuri din Grupe</h2>
-        <div id="meciuriGrupe"></div>
-    </div>
-    <div class="section">
-        <button id="eliminatoriiButton" onclick="genereazaEliminatorii()" disabled>Generează fazele eliminatorii</button>
-        <h2>Sferturi de Finală</h2>
-        <div id="sferturi"></div>
-        <h2>Semifinale</h2>
-        <div id="semifinale"></div>
-        <h2>Finală Mică</h2>
-        <div id="finalaMica"></div>
-        <h2>Finală Mare</h2>
-        <div id="finalaMare"></div>
-    </div>
-    <div class="section">
-        <button id="downloadGrupeButton" onclick="exportGrupeAsImage()">Descarcă Imagine Grupe</button>
-        <button id="downloadEliminatoriiButton" onclick="exportEliminatoriiAsImage()">Descarcă Imagine Faze Eliminatorii</button>
-        <button id="downloadFinaleButton" onclick="exportFinaleAsImage()">Descarcă Imagine Rezultate Finale</button>
-        <button id="clearDataButton" onclick="clearData()">Șterge Datele Salvate</button>
-        <button id="showCurrentMatchesButton" onclick="showCurrentMatches()">Arată meciurile la ora curentă</button>
-    </div>
-    <div id="banner">
-        <h3>Meciuri la ora curentă</h3>
-        <div id="banner-content"></div>
-        <button id="closeBannerButton" onclick="closeBanner()">Închide</button>
-    </div>
+  <h1>Turneu de Fotbal - Grupe și Eliminatorii</h1>
 
-    <script>
-        const echipe = [
-            "Shadow FC", "FC. Rilland", "CSM Unirea", "VidaXL",
-            "FC. Dosko", "FC. Eagles", "Leerdam Sport", "FC. Tilburg",
-            "FC. Peppy", "FC. Hunters", "FC. Wariors", "FC. Urban Construct",
-            "Young Stars", "FC. Concrete Berești", "Amicii", "FC. Raiders Amsterdam"
-        ];
-        let grupeGlobale = {};
-        let statistici = {};
-        const terenuri = ["Terenul 4", "Terenul 5"];
-        const durataRunda = 25;
-        let sferturiWinners = [];
-        let finalaMareTeams = [];
-        let finalaMicaTeams = [];
-        let drawCounter = 0;
-        let eliminatoriiCounter = 0;
-        let allGroupResultsSaved = false;
+  <div class="section">
+    <button onclick="startDraw()">Trage la sorți</button>
+    <div id="grupe"></div>
+    <div id="clasamente"></div>
+  </div>
 
-        window.onload = function() {
-            const savedGrupe = localStorage.getItem("grupe_turneu");
-            if (savedGrupe) {
-                grupeGlobale = JSON.parse(savedGrupe);
-                afiseazaGrupe();
-                afiseazaClasamente();
-                programeazaMeciuri();
-            }
+  <div class="section">
+    <h2>Meciuri din Grupe</h2>
+    <div id="meciuriGrupe"></div>
+  </div>
 
-            const savedStatistici = localStorage.getItem("statistici_turneu");
-            if (savedStatistici) {
-                statistici = JSON.parse(savedStatistici);
-                afiseazaClasamente();
-            }
+  <div class="section">
+    <button onclick="genereazaEliminatorii()">Generează fazele eliminatorii</button>
+    <h2>Sferturi de Finală</h2>
+    <div id="sferturi"></div>
+    <h2>Semifinale</h2>
+    <div id="semifinale"></div>
+    <h2>Finală Mică</h2>
+    <div id="finalaMica"></div>
+    <h2>Finală Mare</h2>
+    <div id="finalaMare"></div>
+  </div>
 
-            const savedSferturiWinners = localStorage.getItem("sferturiWinners");
-            if (savedSferturiWinners) {
-                sferturiWinners = JSON.parse(savedSferturiWinners);
-            }
+  <script>
+    const echipe = ["F.C. Urban Construct", "VidaXL", "Leerdam sport", "Young Stars", "FC. Dosko", "FC. Eagles", "FC. Raiders Amsterdam", "FC. Wariors", "FC. Hunters", "FC. Rilland", "CSM Unirea", "FC. Peppy", "FC Concrete Berești", "Shadow FC", "FC Tilburg", "Amicii"];
 
-            const savedFinalaMareTeams = localStorage.getItem("finalaMareTeams");
-            if (savedFinalaMareTeams) {
-                finalaMareTeams = JSON.parse(savedFinalaMareTeams);
-            }
+    let grupeGlobale = {};
+    let statistici = {};
+    const terenuri = ["Terenul 4", "Terenul 5"];
+    const durataRunda = 25;
+    let sferturiWinners = [];
+    let finalaMareTeams = [];
+    let finalaMicaTeams = [];
 
-            const savedFinalaMicaTeams = localStorage.getItem("finalaMicaTeams");
-            if (savedFinalaMicaTeams) {
-                finalaMicaTeams = JSON.parse(savedFinalaMicaTeams);
-            }
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
 
-            const savedAllGroupResultsSaved = localStorage.getItem("allGroupResultsSaved");
-            if (savedAllGroupResultsSaved) {
-                allGroupResultsSaved = JSON.parse(savedAllGroupResultsSaved);
-                if (allGroupResultsSaved) {
-                    document.getElementById("eliminatoriiButton").disabled = false;
-                }
-            }
+    function startDraw() {
+      const mix = shuffle([...echipe]);
+      grupeGlobale = {
+        "Grupa A": mix.slice(0, 4),
+        "Grupa B": mix.slice(4, 8),
+        "Grupa C": mix.slice(8, 12),
+        "Grupa D": mix.slice(12, 16)
+      };
+      localStorage.setItem("grupe_turneu", JSON.stringify(grupeGlobale));
+      afiseazaGrupe();
+      afiseazaClasamente();
+      programeazaMeciuri();
+    }
 
-            const savedMeciuriGrupe = localStorage.getItem("meciuriGrupe");
-            if (savedMeciuriGrupe) {
-                document.getElementById("meciuriGrupe").innerHTML = savedMeciuriGrupe;
-                attachEventListeners();
-            }
+    function afiseazaGrupe() {
+      const div = document.getElementById("grupe");
+      div.innerHTML = "";
+      for (const g in grupeGlobale) {
+        div.innerHTML += `<div><h3>${g}</h3><ul>` + grupeGlobale[g].map(e => `<li>${e}</li>`).join("") + "</ul></div>";
+      }
+    }
 
-            const savedSferturi = localStorage.getItem("sferturi");
-            if (savedSferturi) {
-                document.getElementById("sferturi").innerHTML = savedSferturi;
-                attachEventListeners();
-            }
+    function afiseazaClasamente() {
+      const div = document.getElementById("clasamente");
+      div.innerHTML = "";
+      for (const g in grupeGlobale) {
+        let tabela = `<h4>${g}</h4><table id="clasament-${g}">
+        <tr><th>Echipă</th><th>MJ</th><th>V</th><th>E</th><th>Î</th><th>GM</th><th>GP</th><th>GV</th><th>P</th></tr>`;
+        grupeGlobale[g].forEach(echipa => {
+          tabela += `<tr id="stat-${g}-${echipa}">
+            <td>${echipa}</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>`;
+        });
+        tabela += "</table>";
+        div.innerHTML += tabela;
+      }
+    }
 
-            const savedSemifinale = localStorage.getItem("semifinale");
-            if (savedSemifinale) {
-                document.getElementById("semifinale").innerHTML = savedSemifinale;
-                attachEventListeners();
-            }
+    function initStats(grupa, echipa) {
+      if (!statistici[grupa]) statistici[grupa] = {};
+      if (!statistici[grupa][echipa]) statistici[grupa][echipa] = {
+        MJ: 0, V: 0, E: 0, I: 0, GM: 0, GP: 0, GV: 0, P: 0
+      };
+    }
 
-            const savedFinalaMica = localStorage.getItem("finalaMica");
-            if (savedFinalaMica) {
-                document.getElementById("finalaMica").innerHTML = savedFinalaMica;
-                attachEventListeners();
-            }
-
-            const savedFinalaMare = localStorage.getItem("finalaMare");
-            if (savedFinalaMare) {
-                document.getElementById("finalaMare").innerHTML = savedFinalaMare;
-                attachEventListeners();
-            }
-        };
-
-        function attachEventListeners() {
-            document.querySelectorAll('button[onclick^="salveazaScor"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                const args = onclickAttr.match(/\((.*?)\)/)[1].split(',').map(arg => arg.trim().replace(/'/g, ''));
-                button.addEventListener('click', function() {
-                    window['salveazaScor'](...args);
-                });
-            });
-
-            document.querySelectorAll('button[onclick^="salveazaScorSfert"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                const args = onclickAttr.match(/\((.*?)\)/)[1].split(',').map(arg => arg.trim().replace(/'/g, ''));
-                button.addEventListener('click', function() {
-                    window['salveazaScorSfert'](...args);
-                });
-            });
-
-            document.querySelectorAll('button[onclick^="salveazaScorSemifinala"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                const args = onclickAttr.match(/\((.*?)\)/)[1].split(',').map(arg => arg.trim().replace(/'/g, ''));
-                button.addEventListener('click', function() {
-                    window['salveazaScorSemifinala'](...args);
-                });
-            });
-
-            document.querySelectorAll('button[onclick^="salveazaScorFinalaMare"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                const args = onclickAttr.match(/\((.*?)\)/)[1].split(',').map(arg => arg.trim().replace(/'/g, ''));
-                button.addEventListener('click', function() {
-                    window['salveazaScorFinalaMare'](...args);
-                });
-            });
-
-            document.querySelectorAll('button[onclick^="salveazaScorFinalaMica"]').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                const args = onclickAttr.match(/\((.*?)\)/)[1].split(',').map(arg => arg.trim().replace(/'/g, ''));
-                button.addEventListener('click', function() {
-                    window['salveazaScorFinalaMica'](...args);
-                });
-            });
+    function updateTable(grupa) {
+      const stats = statistici[grupa];
+      const entries = Object.entries(stats);
+      entries.sort((a, b) => b[1].P - a[1].P || b[1].GV - a[1].GV || b[1].GM - a[1].GM);
+      entries.forEach(([echipa, s]) => {
+        const row = document.getElementById(`stat-${grupa}-${echipa}`);
+        if (row) {
+          row.innerHTML = `<td>${echipa}</td><td>${s.MJ}</td><td>${s.V}</td><td>${s.E}</td><td>${s.I}</td>
+            <td>${s.GM}</td><td>${s.GP}</td><td>${s.GV}</td><td>${s.P}</td>`;
         }
+      });
+    }
 
-        function clearData() {
-            localStorage.clear();
-            location.reload();
+    function salveazaScor(grupa, e1, e2, id) {
+      const g1 = parseInt(document.getElementById(`goluri-${id}-1`).value);
+      const g2 = parseInt(document.getElementById(`goluri-${id}-2`).value);
+      initStats(grupa, e1); initStats(grupa, e2);
+      const s1 = statistici[grupa][e1];
+      const s2 = statistici[grupa][e2];
+
+      s1.MJ++; s2.MJ++;
+      s1.GM += g1; s1.GP += g2;
+      s2.GM += g2; s2.GP += g1;
+      s1.GV = s1.GM - s1.GP;
+      s2.GV = s2.GM - s2.GP;
+
+      if (g1 > g2) { s1.V++; s2.I++; s1.P += 3; }
+      else if (g2 > g1) { s2.V++; s1.I++; s2.P += 3; }
+      else { s1.E++; s2.E++; s1.P += 1; s2.P += 1; }
+
+      updateTable(grupa);
+      document.getElementById(`meci-${id}`).classList.add("completed");
+    }
+
+    function programeazaMeciuri() {
+      const toate = [];
+      for (const g in grupeGlobale) {
+        const lista = grupeGlobale[g];
+        for (let i = 0; i < lista.length; i++) {
+          for (let j = i + 1; j < lista.length; j++) {
+            toate.push({ grupa: g, echipa1: lista[i], echipa2: lista[j] });
+          }
         }
+      }
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+      const rounds = [], queue = [...toate], istoric = {}, start = new Date(); start.setHours(10,0,0,0);
+      let runda = 0;
+
+      while (queue.length > 0) {
+        const set = [], ocupate = new Set();
+        for (let t = 0; t < 2; t++) {
+          for (let i = 0; i < queue.length; i++) {
+            const m = queue[i];
+            const { echipa1, echipa2 } = m;
+            if ((!istoric[echipa1]?.includes(runda-1)) && (!istoric[echipa2]?.includes(runda-1))
+                && !ocupate.has(echipa1) && !ocupate.has(echipa2)) {
+              set.push(m);
+              ocupate.add(echipa1); ocupate.add(echipa2);
+              istoric[echipa1] = istoric[echipa1] || []; istoric[echipa1].push(runda);
+              istoric[echipa2] = istoric[echipa2] || []; istoric[echipa2].push(runda);
+              queue.splice(i, 1); break;
             }
-            return array;
+          }
         }
+        rounds.push(set);
+        runda++;
+      }
 
-        function startDraw() {
-            drawCounter++;
-            const mix = shuffle([...echipe]);
-            grupeGlobale = {
-                "Grupa A": mix.slice(0, 4),
-                "Grupa B": mix.slice(4, 8),
-                "Grupa C": mix.slice(8, 12),
-                "Grupa D": mix.slice(12, 16)
-            };
-            localStorage.setItem("grupe_turneu", JSON.stringify(grupeGlobale));
-            afiseazaGrupe();
-            afiseazaClasamente();
-            programeazaMeciuri();
+      const div = document.getElementById("meciuriGrupe");
+      div.innerHTML = "";
+      let count = 1;
 
-            if (drawCounter === 5) {
-                exportGrupeAsImage();
-                document.getElementById("drawButton").disabled = true;
-            }
-        }
+      rounds.forEach((set, i) => {
+        const ora = new Date(start.getTime() + i * durataRunda * 60000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        set.forEach((meci, j) => {
+          const t = terenuri[j];
+          div.innerHTML += `
+            <div class='match-item' id="meci-${count}">
+              <span><strong>${ora}</strong> | ${meci.grupa} | <strong>${meci.echipa1}</strong> vs <strong>${meci.echipa2}</strong> | ${t}</span>
+              <input type="number" id="goluri-${count}-1" min="0" value="0"> -
+              <input type="number" id="goluri-${count}-2" min="0" value="0">
+              <button onclick="salveazaScor('${meci.grupa}','${meci.echipa1}','${meci.echipa2}', ${count})">Salvează</button>
+            </div>`;
+          count++;
+        });
+      });
+    }
 
-        function exportGrupeAsImage() {
-            html2canvas(document.querySelector(".section")).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'grupe.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
+    function genereazaEliminatorii() {
+      const sferturi = [];
+      for (const g in grupeGlobale) {
+        const groupTeams = grupeGlobale[g];
+        const sortedTeams = groupTeams.sort((a, b) => {
+          const statsA = statistici[g][a];
+          const statsB = statistici[g][b];
+          return statsB.P - statsA.P || statsB.GV - statsA.GV || statsB.GM - statsA.GM;
+        });
+        sferturi.push(sortedTeams[0], sortedTeams[1]);
+      }
 
-        function afiseazaGrupe() {
-            const div = document.getElementById("grupe");
-            div.innerHTML = "";
-            for (const g in grupeGlobale) {
-                div.innerHTML += `
-                    <div class="grupa">
-                        <h3>${g}</h3>
-                        <ul>${grupeGlobale[g].map(e => `<li>${e}</li>`).join("")}</ul>
-                    </div>`;
-            }
-        }
+      const sferturiShuffled = shuffle([...sferturi]);
+      const sferturiMatches = [];
+      for (let i = 0; i < sferturiShuffled.length; i += 2) {
+        sferturiMatches.push([sferturiShuffled[i], sferturiShuffled[i + 1]]);
+      }
 
-        function afiseazaClasamente() {
-            const div = document.getElementById("clasamente");
-            div.innerHTML = "";
-            for (const g in grupeGlobale) {
-                let tabela = `<h4>${g}</h4><table><tr><th>Echipă</th><th>MJ</th><th>V</th><th>E</th><th>Î</th><th>GM</th><th>GP</th><th>GV</th><th>P</th></tr>`;
-                const echipeSortate = grupeGlobale[g].map(echipa => {
-                    initStats(g, echipa);
-                    return statistici[g][echipa];
-                }).sort((a, b) => {
-                    if (b.P !== a.P) return b.P - a.P;
-                    if (b.GV !== a.GV) return b.GV - a.GV;
-                    if (b.GM !== a.GM) return b.GM - a.GM;
-                    return 0;
-                });
-                echipeSortate.forEach(s => {
-                    tabela += `<tr id="stat-${g}-${s.echipa}"><td>${s.echipa}</td><td>${s.MJ}</td><td>${s.V}</td><td>${s.E}</td><td>${s.I}</td><td>${s.GM}</td><td>${s.GP}</td><td>${s.GV}</td><td>${s.P}</td></tr>`;
-                });
-                tabela += "</table>";
-                div.innerHTML += tabela;
-            }
-        }
+      const sferturiDiv = document.getElementById("sferturi");
+      sferturiDiv.innerHTML = "";
+      sferturiMatches.forEach((match, index) => {
+        sferturiDiv.innerHTML += `
+          <div class='match-item'>
+            <span><strong>Sfert ${index + 1}</strong> | <strong>${match[0]}</strong> vs <strong>${match[1]}</strong></span>
+            <input type="number" id="goluri-sfert-${index}-1" min="0" value="0"> -
+            <input type="number" id="goluri-sfert-${index}-2" min="0" value="0">
+            <button onclick="salveazaScorSfert('${match[0]}', '${match[1]}', ${index})">Salvează</button>
+          </div>`;
+      });
+    }
 
-        function initStats(grupa, echipa) {
-            if (!statistici[grupa]) statistici[grupa] = {};
-            if (!statistici[grupa][echipa]) {
-                statistici[grupa][echipa] = { echipa: echipa, MJ: 0, V: 0, E: 0, I: 0, GM: 0, GP: 0, GV: 0, P: 0 };
-            }
-        }
+    function salveazaScorSfert(e1, e2, index) {
+      const g1 = parseInt(document.getElementById(`goluri-sfert-${index}-1`).value);
+      const g2 = parseInt(document.getElementById(`goluri-sfert-${index}-2`).value);
 
-        function updateTable(grupa) {
-            afiseazaClasamente();
-        }
+      const winner = g1 > g2 ? e1 : e2;
+      sferturiWinners.push(winner);
 
-        function salveazaScor(grupa, e1, e2, id) {
-            const button = event.target;
-            if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
-                return;
-            }
+      if (sferturiWinners.length === 4) {
+        genereazaSemifinale();
+      }
+    }
 
-            const g1 = parseInt(document.getElementById(`goluri-${id}-1`).value);
-            const g2 = parseInt(document.getElementById(`goluri-${id}-2`).value);
-            initStats(grupa, e1);
-            initStats(grupa, e2);
-            const s1 = statistici[grupa][e1];
-            const s2 = statistici[grupa][e2];
-            s1.MJ++;
-            s2.MJ++;
-            s1.GM += g1;
-            s1.GP += g2;
-            s2.GM += g2;
-            s2.GP += g1;
-            s1.GV = s1.GM - s1.GP;
-            s2.GV = s2.GM - s2.GP;
-            if (g1 > g2) {
-                s1.V++;
-                s2.I++;
-                s1.P += 3;
-            } else if (g2 > g1) {
-                s2.V++;
-                s1.I++;
-                s2.P += 3;
-            } else {
-                s1.E++;
-                s2.E++;
-                s1.P += 1;
-                s2.P += 1;
-            }
-            updateTable(grupa);
-            document.getElementById(`meci-${id}`).classList.add("completed");
-            button.disabled = true;
-            button.classList.add("used-button");
+    function genereazaSemifinale() {
+      const semifinaleMatches = [
+        [sferturiWinners[0], sferturiWinners[1]],
+        [sferturiWinners[2], sferturiWinners[3]]
+      ];
 
-            localStorage.setItem("statistici_turneu", JSON.stringify(statistici));
+      const semifinaleDiv = document.getElementById("semifinale");
+      semifinaleDiv.innerHTML = "";
+      semifinaleMatches.forEach((match, index) => {
+        semifinaleDiv.innerHTML += `
+          <div class='match-item'>
+            <span><strong>Semifinala ${index + 1}</strong> | <strong>${match[0]}</strong> vs <strong>${match[1]}</strong></span>
+            <input type="number" id="goluri-semifinala-${index}-1" min="0" value="0"> -
+            <input type="number" id="goluri-semifinala-${index}-2" min="0" value="0">
+            <button onclick="salveazaScorSemifinala('${match[0]}', '${match[1]}', ${index})">Salvează</button>
+          </div>`;
+      });
+    }
 
-            checkAllGroupResultsSaved();
+    function salveazaScorSemifinala(e1, e2, index) {
+      const g1 = parseInt(document.getElementById(`goluri-semifinala-${index}-1`).value);
+      const g2 = parseInt(document.getElementById(`goluri-semifinala-${index}-2`).value);
 
-            localStorage.setItem("meciuriGrupe", document.getElementById("meciuriGrupe").innerHTML);
-        }
+      const winner = g1 > g2 ? e1 : e2;
+      const loser = g1 > g2 ? e2 : e1;
 
-        function checkAllGroupResultsSaved() {
-            const allSaved = document.querySelectorAll('.used-button').length === document.querySelectorAll('button:not(#drawButton):not(#eliminatoriiButton):not(#downloadGrupeButton):not(#downloadEliminatoriiButton):not(#downloadFinaleButton):not(#clearDataButton)').length;
-            if (allSaved) {
-                document.getElementById("eliminatoriiButton").disabled = false;
-                allGroupResultsSaved = true;
-                localStorage.setItem("allGroupResultsSaved", JSON.stringify(allGroupResultsSaved));
-            }
-        }
+      if (index === 0) {
+        finalaMareTeams[0] = winner;
+        finalaMicaTeams[0] = loser;
+      } else {
+        finalaMareTeams[1] = winner;
+        finalaMicaTeams[1] = loser;
+      }
 
-        function programeazaMeciuri() {
-            const toate = [];
-            for (const g in grupeGlobale) {
-                const lista = grupeGlobale[g];
-                for (let i = 0; i < lista.length; i++) {
-                    for (let j = i + 1; j < lista.length; j++) {
-                        toate.push({ grupa: g, echipa1: lista[i], echipa2: lista[j] });
-                    }
-                }
-            }
-            const rounds = [], queue = [...toate], istoric = {}, start = new Date();
-            start.setHours(10, 0, 0, 0);
-            let runda = 0;
-            while (queue.length > 0) {
-                const set = [], ocupate = new Set();
-                for (let t = 0; t < 2; t++) {
-                    for (let i = 0; i < queue.length; i++) {
-                        const m = queue[i];
-                        const { echipa1, echipa2 } = m;
-                        if ((!istoric[echipa1]?.includes(runda - 1)) && (!istoric[echipa2]?.includes(runda - 1)) && !ocupate.has(echipa1) && !ocupate.has(echipa2)) {
-                            set.push(m);
-                            ocupate.add(echipa1);
-                            ocupate.add(echipa2);
-                            istoric[echipa1] = istoric[echipa1] || [];
-                            istoric[echipa1].push(runda);
-                            istoric[echipa2] = istoric[echipa2] || [];
-                            istoric[echipa2].push(runda);
-                            queue.splice(i, 1);
-                            break;
-                        }
-                    }
-                }
-                rounds.push(set);
-                runda++;
-            }
-            const div = document.getElementById("meciuriGrupe");
-            div.innerHTML = "";
-            let count = 1;
-            rounds.forEach((set, i) => {
-                const ora = new Date(start.getTime() + i * durataRunda * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                set.forEach((meci, j) => {
-                    const t = terenuri[j];
-                    div.innerHTML += `
-                        <div class='match-item' id="meci-${count}">
-                            <span><strong>${ora}</strong> | ${meci.grupa} | <strong>${meci.echipa1}</strong> vs <strong>${meci.echipa2}</strong> | ${t}</span>
-                            <input type="number" id="goluri-${count}-1" min="0" value="0"> -
-                            <input type="number" id="goluri-${count}-2" min="0" value="0">
-                            <button onclick="salveazaScor('${meci.grupa}','${meci.echipa1}','${meci.echipa2}', ${count})">Salvează</button>
-                        </div>`;
-                    count++;
-                });
-            });
-            attachEventListeners();
-        }
+      if (finalaMareTeams.length === 2 && finalaMicaTeams.length === 2) {
+        genereazaFinale();
+      }
+    }
 
-        function genereazaEliminatorii() {
-            if (!allGroupResultsSaved) {
-                alert("Toate rezultatele grupelor trebuie salvate înainte de a genera fazele eliminatorii.");
-                return;
-            }
+    function genereazaFinale() {
+      const finalaMareDiv = document.getElementById("finalaMare");
+      finalaMareDiv.innerHTML = `
+        <div class='match-item'>
+          <span><strong>Finala Mare</strong> | <strong>${finalaMareTeams[0]}</strong> vs <strong>${finalaMareTeams[1]}</strong></span>
+          <input type="number" id="goluri-finalaMare-1" min="0" value="0"> -
+          <input type="number" id="goluri-finalaMare-2" min="0" value="0">
+          <button onclick="salveazaScorFinalaMare('${finalaMareTeams[0]}', '${finalaMareTeams[1]}')">Salvează</button>
+        </div>`;
 
-            eliminatoriiCounter++;
-            const sferturi = [
-                ["Shadow FC", "VidaXL"],
-                ["Young Stars", "FC. Dosko"],
-                ["FC. Wariors", "Amicii"],
-                ["FC. Peppy", "FC. Eagles"]
-            ];
+      const finalaMicaDiv = document.getElementById("finalaMica");
+      finalaMicaDiv.innerHTML = `
+        <div class='match-item'>
+          <span><strong>Finala Mică</strong> | <strong>${finalaMicaTeams[0]}</strong> vs <strong>${finalaMicaTeams[1]}</strong></span>
+          <input type="number" id="goluri-finalaMica-1" min="0" value="0"> -
+          <input type="number" id="goluri-finalaMica-2" min="0" value="0">
+          <button onclick="salveazaScorFinalaMica('${finalaMicaTeams[0]}', '${finalaMicaTeams[1]}')">Salvează</button>
+        </div>`;
+    }
 
-            afiseazaClasamentSferturi(sferturi.flat());
-            afiseazaClasamentSemifinale([]);
-            afiseazaClasamentFinalaMare("", "");
-            afiseazaClasamentFinalaMica("", "");
+    function salveazaScorFinalaMare(e1, e2) {
+      const g1 = parseInt(document.getElementById(`goluri-finalaMare-1`).value);
+      const g2 = parseInt(document.getElementById(`goluri-finalaMare-2`).value);
+      alert(`Finala Mare: ${g1} - ${g2}\nCampion: ${g1 > g2 ? e1 : e2}`);
+    }
 
-            const sferturiDiv = document.getElementById("sferturi");
-            sferturiDiv.innerHTML = "<h3>Sferturi de Finală</h3>";
-            sferturi.forEach((match, index) => {
-                const ora = index < 2 ? "04:00 PM" : "04:25 PM";
-                sferturiDiv.innerHTML += `
-                    <div class='match-item'>
-                        <span><strong>${ora} | Sfert ${index + 1} | ${match[0]} vs ${match[1]}</strong></span>
-                        <input type="number" id="goluri-sfert-${index}-1" min="0" value="0"> -
-                        <input type="number" id="goluri-sfert-${index}-2" min="0" value="0">
-                        <button onclick="salveazaScorSfert('${match[0]}', '${match[1]}', ${index})">Salvează</button>
-                    </div>`;
-            });
-
-            if (eliminatoriiCounter === 5) {
-                document.getElementById("eliminatoriiButton").disabled = true;
-                exportEliminatoriiAsImage();
-            }
-
-            localStorage.setItem("sferturi", sferturiDiv.innerHTML);
-            attachEventListeners();
-        }
-
-        function exportGrupeAsImage() {
-            const element = document.querySelectorAll(".section")[0];
-            html2canvas(element).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'grupe.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-
-        function exportEliminatoriiAsImage() {
-            const element = document.querySelectorAll(".section")[1];
-            html2canvas(element).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'faze_eliminatorii.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-
-        function exportFinaleAsImage() {
-            const element = document.querySelectorAll(".section")[2];
-            html2canvas(element).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'rezultate_finale.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-
-        function afiseazaClasamentSferturi(echipe) {
-            const div = document.getElementById("clasament-sferturi");
-            let tabela = `<h3>Sferturi de Finală</h3><table><tr><th>Loc</th><th>Echipă</th></tr>`;
-            echipe.forEach((echipa, index) => {
-                tabela += `<tr><td>${index + 1}</td><td>${echipa}</td></tr>`;
-            });
-            tabela += "</table>";
-            div.innerHTML = tabela;
-        }
-
-        function salveazaScorSfert(e1, e2, index) {
-            const button = event.target;
-            if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
-                return;
-            }
-
-            const g1 = parseInt(document.getElementById(`goluri-sfert-${index}-1`).value);
-            const g2 = parseInt(document.getElementById(`goluri-sfert-${index}-2`).value);
-            const winner = g1 > g2 ? e1 : e2;
-            sferturiWinners.push(winner);
-            button.disabled = true;
-            button.classList.add("used-button");
-
-            localStorage.setItem("sferturiWinners", JSON.stringify(sferturiWinners));
-
-            localStorage.setItem("sferturi", document.getElementById("sferturi").innerHTML);
-
-            if (sferturiWinners.length === 4) {
-                genereazaSemifinale();
-            }
-        }
-
-        function genereazaSemifinale() {
-            const semifinaleMatches = [
-                [sferturiWinners[0], sferturiWinners[1]],
-                [sferturiWinners[2], sferturiWinners[3]]
-            ];
-            afiseazaClasamentSemifinale(sferturiWinners);
-            const semifinaleDiv = document.getElementById("semifinale");
-            semifinaleDiv.innerHTML = "<h3>Semifinale</h3>";
-            semifinaleMatches.forEach((match, index) => {
-                semifinaleDiv.innerHTML += `
-                    <div class='match-item'>
-                        <span><strong>05:00 PM | Semifinala ${index + 1} | ${match[0]} vs ${match[1]}</strong></span>
-                        <input type="number" id="goluri-semifinala-${index}-1" min="0" value="0"> -
-                        <input type="number" id="goluri-semifinala-${index}-2" min="0" value="0">
-                        <button onclick="salveazaScorSemifinala('${match[0]}', '${match[1]}', ${index})">Salvează</button>
-                    </div>`;
-            });
-
-            localStorage.setItem("semifinale", semifinaleDiv.innerHTML);
-            attachEventListeners();
-        }
-
-        function afiseazaClasamentSemifinale(echipe) {
-            const div = document.getElementById("clasament-semifinale");
-            let tabela = `<h3>Semifinale</h3><table><tr><th>Loc</th><th>Echipă</th></tr>`;
-            echipe.forEach((echipa, index) => {
-                tabela += `<tr><td>${index + 1}</td><td>${echipa}</td></tr>`;
-            });
-            tabela += "</table>";
-            div.innerHTML = tabela;
-        }
-
-        function salveazaScorSemifinala(e1, e2, index) {
-            const button = event.target;
-            if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
-                return;
-            }
-
-            const g1 = parseInt(document.getElementById(`goluri-semifinala-${index}-1`).value);
-            const g2 = parseInt(document.getElementById(`goluri-semifinala-${index}-2`).value);
-            const winner = g1 > g2 ? e1 : e2;
-            const loser = g1 > g2 ? e2 : e1;
-            if (index === 0) {
-                finalaMareTeams[0] = winner;
-                finalaMicaTeams[0] = loser;
-            } else {
-                finalaMareTeams[1] = winner;
-                finalaMicaTeams[1] = loser;
-            }
-            button.disabled = true;
-            button.classList.add("used-button");
-
-            localStorage.setItem("finalaMareTeams", JSON.stringify(finalaMareTeams));
-            localStorage.setItem("finalaMicaTeams", JSON.stringify(finalaMicaTeams));
-
-            localStorage.setItem("semifinale", document.getElementById("semifinale").innerHTML);
-
-            if (finalaMareTeams.length === 2 && finalaMicaTeams.length === 2) {
-                genereazaFinale();
-            }
-        }
-
-        function genereazaFinale() {
-            afiseazaClasamentFinalaMare(finalaMareTeams[0], finalaMareTeams[1]);
-            afiseazaClasamentFinalaMica(finalaMicaTeams[0], finalaMicaTeams[1]);
-            const finalaMareDiv = document.getElementById("finalaMare");
-            finalaMareDiv.innerHTML = `
-                <div class='match-item'>
-                    <span><strong>06:10 PM | Finala Mare | ${finalaMareTeams[0]} vs ${finalaMareTeams[1]}</strong></span>
-                    <input type="number" id="goluri-finalaMare-1" min="0" value="0"> -
-                    <input type="number" id="goluri-finalaMare-2" min="0" value="0">
-                    <button onclick="salveazaScorFinalaMare('${finalaMareTeams[0]}', '${finalaMareTeams[1]}')">Salvează</button>
-                </div>`;
-            const finalaMicaDiv = document.getElementById("finalaMica");
-            finalaMicaDiv.innerHTML = `
-                <div class='match-item'>
-                    <span><strong>05:40 PM | Finala Mică | ${finalaMicaTeams[0]} vs ${finalaMicaTeams[1]}</strong></span>
-                    <input type="number" id="goluri-finalaMica-1" min="0" value="0"> -
-                    <input type="number" id="goluri-finalaMica-2" min="0" value="0">
-                    <button onclick="salveazaScorFinalaMica('${finalaMicaTeams[0]}', '${finalaMicaTeams[1]}')">Salvează</button>
-                </div>`;
-
-            localStorage.setItem("finalaMare", finalaMareDiv.innerHTML);
-            localStorage.setItem("finalaMica", finalaMicaDiv.innerHTML);
-            attachEventListeners();
-        }
-
-        function afiseazaClasamentFinalaMare(campion, finalista) {
-            const div = document.getElementById("clasament-finalaMare");
-            let tabela = `<h3>Finala Mare</h3><table><tr><th>Loc</th><th>Echipă</th></tr>`;
-            tabela += `<tr><td>1</td><td>${campion}</td></tr>`;
-            tabela += `<tr><td>2</td><td>${finalista}</td></tr>`;
-            tabela += "</table>";
-            div.innerHTML = tabela;
-        }
-
-        function afiseazaClasamentFinalaMica(loc3, loc4) {
-            const div = document.getElementById("clasament-finalaMica");
-            let tabela = `<h3>Finala Mică</h3><table><tr><th>Loc</th><th>Echipă</th></tr>`;
-            tabela += `<tr><td>3</td><td>${loc3}</td></tr>`;
-            tabela += `<tr><td>4</td><td>${loc4}</td></tr>`;
-            tabela += "</table>";
-            div.innerHTML = tabela;
-        }
-
-        function salveazaScorFinalaMare(e1, e2) {
-            const button = event.target;
-            if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
-                return;
-            }
-
-            const g1 = parseInt(document.getElementById(`goluri-finalaMare-1`).value);
-            const g2 = parseInt(document.getElementById(`goluri-finalaMare-2`).value);
-            const campion = g1 > g2 ? e1 : e2;
-            const finalista = g1 > g2 ? e2 : e1;
-            alert(`Finala Mare: ${g1} - ${g2}\nCampion: ${campion}`);
-            button.disabled = true;
-            button.classList.add("used-button");
-
-            localStorage.setItem("finalaMare", document.getElementById("finalaMare").innerHTML);
-        }
-
-        function salveazaScorFinalaMica(e1, e2) {
-            const button = event.target;
-            if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
-                return;
-            }
-
-            const g1 = parseInt(document.getElementById(`goluri-finalaMica-1`).value);
-            const g2 = parseInt(document.getElementById(`goluri-finalaMica-2`).value);
-            const loc3 = g1 > g2 ? e1 : e2;
-            const loc4 = g1 > g2 ? e2 : e1;
-            alert(`Finala Mică: ${g1} - ${g2}\nLocul 3: ${loc3}`);
-            button.disabled = true;
-            button.classList.add("used-button");
-
-            localStorage.setItem("finalaMica", document.getElementById("finalaMica").innerHTML);
-        }
-
-        function showCurrentMatches() {
-            const now = new Date();
-            const currentHours = now.getHours().toString().padStart(2, '0');
-            const currentMinutes = now.getMinutes().toString().padStart(2, '0');
-            const currentTime = `${currentHours}:${currentMinutes}`;
-
-            const banner = document.getElementById("banner");
-            const bannerContent = document.getElementById("banner-content");
-            bannerContent.innerHTML = "";
-
-            const matches = document.querySelectorAll('.match-item');
-            let foundMatches = false;
-
-            matches.forEach(match => {
-                const matchTime = match.querySelector('span').textContent.match(/\d{2}:\d{2}/);
-                if (matchTime && matchTime[0] === currentTime) {
-                    const matchInfo = match.querySelector('span').textContent;
-                    bannerContent.innerHTML += `<div>${matchInfo}</div>`;
-                    foundMatches = true;
-                }
-            });
-
-            if (foundMatches) {
-                banner.style.display = "block";
-            } else {
-                alert("Nu există meciuri la ora curentă.");
-            }
-        }
-
-        function closeBanner() {
-            document.getElementById("banner").style.display = "none";
-        }
-    </script>
+    function salveazaScorFinalaMica(e1, e2) {
+      const g1 = parseInt(document.getElementById(`goluri-finalaMica-1`).value);
+      const g2 = parseInt(document.getElementById(`goluri-finalaMica-2`).value);
+      alert(`Finala Mică: ${g1} - ${g2}\nLocul 3: ${g1 > g2 ? e1 : e2}`);
+    }
+  </script>
 </body>
 </html>
