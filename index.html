@@ -117,6 +117,7 @@
         <button id="downloadFinaleButton" onclick="exportFinaleAsImage()">Descarcă Imagine Rezultate Finale</button>
         <button id="clearDataButton" onclick="clearData()">Șterge Datele Salvate</button>
         <button id="showCurrentMatchesButton" onclick="showCurrentMatches()">Arată meciurile la ora curentă</button>
+        <button onclick="window.open('https://dobrag197.github.io/TabelaScor/', '_blank')">Du-te catre tabela jocului</button>
     </div>
     <div id="banner">
         <h3>Meciuri la ora curentă</h3>
@@ -343,6 +344,7 @@
         function salveazaScor(grupa, e1, e2, id) {
             const button = event.target;
             if (button.disabled) {
+                alert("Acest scor a fost deja salvat!");
                 return;
             }
 
@@ -524,6 +526,7 @@
         function salveazaScorSfert(e1, e2, index) {
             const button = event.target;
             if (button.disabled) {
+                alert("Acest scor a fost salvat!");
                 return;
             }
 
@@ -578,6 +581,7 @@
         function salveazaScorSemifinala(e1, e2, index) {
             const button = event.target;
             if (button.disabled) {
+                alert("Acest scor a fost deja salvat!");
                 return;
             }
 
@@ -651,6 +655,7 @@
         function salveazaScorFinalaMare(e1, e2) {
             const button = event.target;
             if (button.disabled) {
+                alert("Acest scor a fost deja salvat!");
                 return;
             }
 
@@ -668,6 +673,7 @@
         function salveazaScorFinalaMica(e1, e2) {
             const button = event.target;
             if (button.disabled) {
+                alert("Acest scor a fost deja salvat!");
                 return;
             }
 
