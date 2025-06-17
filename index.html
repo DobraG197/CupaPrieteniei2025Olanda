@@ -6,13 +6,12 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
-
-  background-image: url('https://github.com/DobraG197/CupaPrieteniei2025Olanda/blob/main/Cupa%20Prieteniei_%20Handshake%20at%20Footy%20Park.png');
-  background-size: 300px 300px;  /* this sets tile size */
-  background-repeat: repeat;     /* repeat in both directions */
-  background-position: top left; /* optional */
-  font-family: Arial, sans-serif;
-  padding: 10px;
+            background-image: url('https://github.com/DobraG197/CupaPrieteniei2025Olanda/blob/main/Cupa%20Prieteniei_%20Handshake%20at%20Footy%20Park.png');
+            background-size: 300px 300px;
+            background-repeat: repeat;
+            background-position: top left;
+            font-family: Arial, sans-serif;
+            padding: 10px;
         }
         h1, h2 {
             text-align: center;
@@ -390,7 +389,7 @@
         }
 
         function checkAllGroupResultsSaved() {
-            const allSaved = document.querySelectorAll('.used-button').length === document.querySelectorAll('button:not(#drawButton):not(#eliminatoriiButton):not(#downloadGrupeButton):not(#downloadEliminatoriiButton):not(#downloadFinaleButton):not(#clearDataButton)').length;
+            const allSaved = document.querySelectorAll('.used-button').length === document.querySelectorAll('button[onclick^="salveazaScor"]').length;
             if (allSaved) {
                 document.getElementById("eliminatoriiButton").disabled = false;
                 allGroupResultsSaved = true;
@@ -494,16 +493,6 @@
             attachEventListeners();
         }
 
-        function exportGrupeAsImage() {
-            const element = document.querySelectorAll(".section")[0];
-            html2canvas(element).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'grupe.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-
         function exportEliminatoriiAsImage() {
             const element = document.querySelectorAll(".section")[1];
             html2canvas(element).then(canvas => {
@@ -537,7 +526,7 @@
         function salveazaScorSfert(e1, e2, index) {
             const button = event.target;
             if (button.disabled) {
-                alert("Acest scor a fost deja salvat!");
+                alert("Acest scor a fost salvat!");
                 return;
             }
 
