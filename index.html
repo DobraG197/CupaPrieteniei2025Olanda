@@ -117,7 +117,8 @@
         <button id="downloadFinaleButton" onclick="exportFinaleAsImage()">Descarcă Imagine Rezultate Finale</button>
         <button id="clearDataButton" onclick="clearData()">Șterge Datele Salvate</button>
         <button id="showCurrentMatchesButton" onclick="showCurrentMatches()">Arată meciurile la ora curentă</button>
-        <button onclick="window.open('https://dobrag197.github.io/TabelaScor/', '_blank')">Du-te catre grupe</button>
+        <button onclick="window.open('https://dobrag197.github.io/AfisareStatistica/', '_blank')">Du-te catre grupe</button>
+		<button onclick="window.open('https://dobrag197.github.io/TabelScoruri/', '_blank')">Du-te catre grupe</button>
     </div>
     <div id="banner">
         <h3>Meciuri la ora curentă</h3>
@@ -559,7 +560,7 @@
         function salveazaScorSfert(e1, e2, index) {
             const button = event.target;
             if (button.disabled) {
-                alert("Acest scor a fost salvat!");
+                
                 return;
             }
 
